@@ -13,7 +13,11 @@ hs_err_pid*
 
 .idea
 *.iml
+<<<<<<< HEAD
 node_modules
 .sass-cache
 npm-debug.log
 .DS_Store
+
+target
+src/main/resources/twitter-authentication.properties
