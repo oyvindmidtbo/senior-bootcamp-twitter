@@ -6,6 +6,7 @@ import twitter.Tweet;
 
 public class JsonParser {
 
+    private static final String ID = "id";
     private static final String TEXT = "text";
     private static final String IN_REPLY_TO_SCREEN_NAME = "in_reply_to_screen_name";
     private static final String IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
@@ -19,14 +20,15 @@ public class JsonParser {
         try {
             JSONObject jsonObject = new JSONObject(json);
             
-            tweet = new Tweet();
+            tweet = new Tweet()
+                    .setId(jsonObject.getString(ID))
+                    .setText(jsonObject.getString(TEXT))
+                    .setInReplyToScreenName(jsonObject.getString(IN_REPLY_TO_SCREEN_NAME))
+                    .setInReplyToStatusId(jsonObject.getString(IN_REPLY_TO_STATUS_ID))
+                    .setInReplyToStatusIdStr(jsonObject.getString(IN_REPLY_TO_STATUS_ID_STR))
+                    .setInReplyToUserId(jsonObject.getString(IN_REPLY_TO_USER_ID))
+                    .setInReplyToUserIdStr(jsonObject.getString(IN_REPLY_TO_USER_ID_STR));
             
-            tweet.setText(jsonObject.getString(TEXT));
-            tweet.setInReplyToScreenName(jsonObject.getString(IN_REPLY_TO_SCREEN_NAME));
-            tweet.setInReplyToStatusId(jsonObject.getString(IN_REPLY_TO_STATUS_ID));
-            tweet.setInReplyToStatusIdStr(jsonObject.getString(IN_REPLY_TO_STATUS_ID_STR));
-            tweet.setInReplyToUserId(jsonObject.getString(IN_REPLY_TO_USER_ID));
-            tweet.setInReplyToUserIdStr(jsonObject.getString(IN_REPLY_TO_USER_ID_STR));
         } catch (JSONException e) {
             return null;
         }

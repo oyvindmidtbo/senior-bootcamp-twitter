@@ -15,55 +15,62 @@ public class Tweet {
         return text;
     }
 
-    public void setText(String text) {
+    public Tweet setText(String text) {
         this.text = text;
+        return this;
     }
 
     public String getInReplyToScreenName() {
         return inReplyToScreenName;
     }
 
-    public void setInReplyToScreenName(String inReplyToScreenName) {
+    public Tweet setInReplyToScreenName(String inReplyToScreenName) {
         this.inReplyToScreenName = inReplyToScreenName;
+        return this;
     }
 
     public String getInReplyToStatusId() {
         return inReplyToStatusId;
     }
 
-    public void setInReplyToStatusId(String inReplyToStatusId) {
+    public Tweet setInReplyToStatusId(String inReplyToStatusId) {
         this.inReplyToStatusId = inReplyToStatusId;
+        return this;
     }
 
     public String getInReplyToStatusIdStr() {
         return inReplyToStatusIdStr;
     }
 
-    public void setInReplyToStatusIdStr(String inReplyToStatusIdStr) {
+    public Tweet setInReplyToStatusIdStr(String inReplyToStatusIdStr) {
         this.inReplyToStatusIdStr = inReplyToStatusIdStr;
+        return this;
     }
 
     public String getInReplyToUserId() {
         return inReplyToUserId;
     }
 
-    public void setInReplyToUserId(String inReplyToUserId) {
+    public Tweet setInReplyToUserId(String inReplyToUserId) {
         this.inReplyToUserId = inReplyToUserId;
+        return this;
     }
 
     public String getInReplyToUserIdStr() {
         return inReplyToUserIdStr;
     }
 
-    public void setInReplyToUserIdStr(String inReplyToUserIdStr) {
+    public Tweet setInReplyToUserIdStr(String inReplyToUserIdStr) {
         this.inReplyToUserIdStr = inReplyToUserIdStr;
+        return this;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public Tweet setId(String id) {
         this.id = id;
+        return this;
     }
 }
