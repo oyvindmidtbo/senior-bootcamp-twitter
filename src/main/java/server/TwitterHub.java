@@ -12,9 +12,6 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 
-/**
- * Created by Stig-Rune Skansgård on 08.01.2015.
- */
 public class TwitterHub extends WebSocketServer {
 
     public TwitterHub(int port) throws UnknownHostException {

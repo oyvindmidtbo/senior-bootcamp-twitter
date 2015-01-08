@@ -13,6 +13,7 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import org.java_websocket.WebSocketImpl;
 import server.TwitterHub;
+import utilities.JsonParser;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -26,13 +27,8 @@ public class TwitterClient {
     public static void main(String[] args) throws UnknownHostException {
         TwitterAuthentication twitterAuthentication = new TwitterAuthentication();
 
-        System.out.println(twitterAuthentication.getConsumerKey());
-        System.out.println(twitterAuthentication.getConsumerSecret());
-        System.out.println(twitterAuthentication.getAccessToken());
-        System.out.println(twitterAuthentication.getAccessTokenSecret());
-
-        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100000);
-        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<Event>(1000);
+        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
+        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
 
         /** Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth) */
         Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
@@ -65,7 +61,7 @@ public class TwitterClient {
         int port = 8887; // 843 flash policy port
         try {
             port = Integer.parseInt( args[ 0 ] );
-        } catch ( Exception ex ) {
+        } catch ( Exception ignored) {
         }
         TwitterHub hub = new TwitterHub( port );
         hub.start();
@@ -82,7 +78,13 @@ public class TwitterClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //System.out.println((msg));
+            Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
+            
+            if (tweet != null) {
+                if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
+                    System.out.println((tweet.getText()));
+                }
+            }
         }
     }
 }
