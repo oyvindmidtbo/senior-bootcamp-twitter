@@ -71,10 +71,6 @@ public class TwitterClient {
             String msg = null;
             try {
                 msg = msgQueue.take();
-
-                if (!msg.contains("\"in_reply_to_status_id\":null"))
-                    hub.sendToAll(msg);
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -83,6 +79,7 @@ public class TwitterClient {
             if (tweet != null) {
                 if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
                     System.out.println((tweet.getText()));
+                    hub.sendToAll(tweet.getText());
                 }
             }
         }
