@@ -8,12 +8,12 @@ module.exports = function(grunt) {
       },
       app: {
         src: [
-          'scripts/apps/twitter/*.js'],
+          'scripts/*.js'],
         dest: 'scripts/packed/app.packed.js'
       }
     },
     jshint: {
-      files: ['scripts/apps/**/*.js'
+      files: ['scripts/*.js', '!scripts/packed/*.js'
       ],
       options: {
         // options here to override JSHint defaults
