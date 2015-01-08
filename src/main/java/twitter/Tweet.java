@@ -2,6 +2,7 @@ package twitter;
 
 public class Tweet {
     
+    private String id;
     private String text;
     private String inReplyToScreenName;
     private String inReplyToStatusId;
@@ -56,5 +57,13 @@ public class Tweet {
 
     public void setInReplyToUserIdStr(String inReplyToUserIdStr) {
         this.inReplyToUserIdStr = inReplyToUserIdStr;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
