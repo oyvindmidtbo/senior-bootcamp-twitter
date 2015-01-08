@@ -6,9 +6,6 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by brynjulv brynjulvsen on 08/01/15.
- */
 public class Provider {
     GraphDatabaseService graphDb;
 
@@ -21,7 +18,7 @@ public class Provider {
         File directory;
         try
         {
-            directory = File.createTempFile( "neo4j-koans", "dir" );
+            directory = File.createTempFile( "neo4j-bootcamp", "dir" );
             System.out.println( String.format( "Created a new Neo4j database at [%s]", directory.getAbsolutePath() ) );
         }
         catch ( IOException e )
