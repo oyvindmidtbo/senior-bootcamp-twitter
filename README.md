@@ -2,11 +2,9 @@
 
 Legg filen twitter-authentication.properties under src/main/resources. Denne må inneholde følgende felt:
 
-<code>
-consumerKey=<br/>
-consumerSecret=<br/>
-accessToken=<br/>
-accessTokenSecret=<br/>
-</code>
+<div><code>consumerKey=</code></div>
+<div><code>consumerSecret=</code></div>
+<div><code>accessToken=</code></div>
+<div><code>accessTokenSecret=</code></div>
 
 Fyll inn verdiene fra apps.twitter.com
