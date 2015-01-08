@@ -22,19 +22,19 @@ public class TwitterAuthentication {
         return properties;
     }
     
-    public String getConsumerKey() throws IOException {
+    public String getConsumerKey() {
         return getProperties().getProperty("consumerKey");
     }
 
-    public String getConsumerSecret() throws IOException {
+    public String getConsumerSecret() {
         return getProperties().getProperty("consumerSecret");
     }
 
-    public String getAccessToken() throws IOException {
+    public String getAccessToken() {
         return getProperties().getProperty("accessToken");
     }
 
-    public String getAccessTokenSecret() throws IOException {
+    public String getAccessTokenSecret() {
         return getProperties().getProperty("accessTokenSecret");
     }
 }
