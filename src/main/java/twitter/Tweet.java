@@ -78,7 +78,8 @@ public class Tweet {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public Tweet setUserId(String userId) {
         this.userId = userId;
+        return this;
     }
 }
