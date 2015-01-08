@@ -11,13 +11,19 @@ import com.twitter.hbc.core.event.Event;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+import org.java_websocket.WebSocketImpl;
+import server.TwitterHub;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TwitterClient {
-    public static void main(String[] args) {
+
+
+
+    public static void main(String[] args) throws UnknownHostException {
         TwitterAuthentication twitterAuthentication = new TwitterAuthentication();
 
         System.out.println(twitterAuthentication.getConsumerKey());
@@ -55,14 +61,28 @@ public class TwitterClient {
         // Attempts to establish a connection.
         hosebirdClient.connect();
 
+        WebSocketImpl.DEBUG = true;
+        int port = 8887; // 843 flash policy port
+        try {
+            port = Integer.parseInt( args[ 0 ] );
+        } catch ( Exception ex ) {
+        }
+        TwitterHub hub = new TwitterHub( port );
+        hub.start();
+        System.out.println("TwitterHub started on port: " + hub.getPort());
+
         while (!hosebirdClient.isDone()) {
             String msg = null;
             try {
                 msg = msgQueue.take();
+
+                if (!msg.contains("\"in_reply_to_status_id\":null"))
+                    hub.sendToAll(msg);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println((msg));
+            //System.out.println((msg));
         }
     }
 }
