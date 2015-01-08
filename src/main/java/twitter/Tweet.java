@@ -2,14 +2,14 @@ package twitter;
 
 public class Tweet {
     
-    private String id;
+    private String tweetId;
+    private String userId;
     private String text;
     private String inReplyToScreenName;
     private String inReplyToStatusId;
     private String inReplyToStatusIdStr;
     private String inReplyToUserId;
     private String inReplyToUserIdStr;
-
 
     public String getText() {
         return text;
@@ -65,12 +65,20 @@ public class Tweet {
         return this;
     }
 
-    public String getId() {
-        return id;
+    public String getTweetId() {
+        return tweetId;
     }
 
-    public Tweet setId(String id) {
-        this.id = id;
+    public Tweet setTweetId(String tweetId) {
+        this.tweetId = tweetId;
         return this;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

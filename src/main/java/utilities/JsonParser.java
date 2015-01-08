@@ -21,7 +21,7 @@ public class JsonParser {
             JSONObject jsonObject = new JSONObject(json);
             
             tweet = new Tweet()
-                    .setId(jsonObject.getString(ID))
+                    .setTweetId(jsonObject.getString(ID))
                     .setText(jsonObject.getString(TEXT))
                     .setInReplyToScreenName(jsonObject.getString(IN_REPLY_TO_SCREEN_NAME))
                     .setInReplyToStatusId(jsonObject.getString(IN_REPLY_TO_STATUS_ID))
