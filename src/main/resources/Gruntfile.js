@@ -7,9 +7,12 @@ module.exports = function(grunt) {
         separator: '\n\n/* --- Ny fil --- */ \n\n'
       },
       app: {
-        src: [
-          'scripts/*.js'],
+        src: ['scripts/app/*.js'],
         dest: 'scripts/packed/app.packed.js'
+      },
+      biblioteker: {
+        src: ['scripts/biblioteker/*.js'],
+        dest: 'scripts/packed/biblioteker.packed.js'
       }
     },
     jshint: {
