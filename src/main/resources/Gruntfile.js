@@ -30,7 +30,7 @@ module.exports = function(grunt) {
       }
     },
     compass: {
-      altinn: { // Target
+      app: { // Target
         options: { // Target options
           sassDir: 'styles/sass',
           specify: 'styles/sass/main.scss',
