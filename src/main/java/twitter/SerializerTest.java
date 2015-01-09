@@ -1,6 +1,5 @@
 package twitter;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.apache.commons.lang3.StringUtils;
@@ -9,9 +8,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- * Created by Stig-Rune Skansgård on 09.01.2015.
- */
 public class SerializerTest {
 
     static String tweet = "{\n" +
@@ -57,7 +53,10 @@ public class SerializerTest {
             "\t\t\"possibly_sensitive\":false,\n" +
             "\t\t\"filter_level\":\"medium\",\n" +
             "\t\t\"lang\":\"fr\",\n" +
-            "\t\t\"timestamp_ms\":\"1420799527622\"}\n";
+            "\t\t\"timestamp_ms\":\"1420799527622\"}\n" +
+            "\t\"retweeted_status\":\n" +
+            "\t{\n" +
+            "\t\t\"id\":551213330895892481\"\n}";
 
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -65,7 +64,6 @@ public class SerializerTest {
         mapper.setDateFormat(new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH));
 
         Tweet deSerializedTweet = mapper.readValue(tweet, Tweet.class);
-
 
         if (StringUtils.isBlank(deSerializedTweet.getTweetId()))
             System.out.println("TweetId should not be null or empty");
@@ -84,6 +82,9 @@ public class SerializerTest {
 
         if (StringUtils.isBlank(deSerializedTweet.getInReplyToUserIdStr()))
             System.out.println("InReplyToUserIdStr should not be null or empty");
+        
+        if (StringUtils.isBlank(deSerializedTweet.getRetweetedStatus().getTweetId()))
+            System.out.println("RetweetedStatus should not be null or empty");
 
         System.out.println("Tests complete");
     }
