@@ -105,9 +105,25 @@ public class Provider {
         return replies;
     }
 
+    /* Get all replies and replies to replies (and so on). Recursion ahoy */
+    public Set<Node> getAllChildren(Node top, Set<Node> replies){
+        if(replies == null) {
+            replies = new HashSet<Node>();
+        }
+        ExecutionEngine engine = new ExecutionEngine( getDatabase(), StringLogger.DEV_NULL );
+        GraphDatabaseService db = getDatabase();
+
+        for(Node node : getReplies(top)){
+            replies.add(node);
+            if(node.hasRelationship(RelTypes.REPLY_TO, Direction.INCOMING)) {
+                replies.addAll(getAllChildren(node, replies));
+            }
+        }
+        return replies;
+    }
 
 
-    public Path getConversationStart(Node end){
+    public Path getPathToConversationStart(Node end){
         Path fullPath = null;
         GraphDatabaseService db = getDatabase();
 
@@ -123,7 +139,8 @@ public class Provider {
         return fullPath;
     }
 
-/* //eksempel
+    /*
+ //eksempel
     public static void main(String[] args){
         Provider provider = new Provider();
         GraphDatabaseService db = provider.getDatabase();
@@ -150,13 +167,21 @@ public class Provider {
                             .setUserId("2")
                             .setInReplyToStatusId("2")
             );
+
+            provider.createTweet(
+                    new Tweet()
+                            .setTweetId("3")
+                            .setText("Tweeet tweeeeet")
+                            .setUserId("2")
+                            .setInReplyToStatusId("1")
+            );
             tx.success();
         } catch(Exception e) {
             e.printStackTrace();
         }
 
         try(Transaction tx = db.beginTx()) {
-            for (PropertyContainer tweet : provider.getConversationStart(provider.getTweet("3"))) {
+            for (PropertyContainer tweet : provider.getPathToConversationStart(provider.getTweet("3"))) {
                 if(tweet instanceof Relationship){
                     System.out.println(((Relationship) tweet).getType().name());
                 }
@@ -165,9 +190,13 @@ public class Provider {
                 }
             }
             System.out.println(provider.getReplies(provider.getTweet("1")).size());
+
+
+            System.out.println(provider.getAllChildren(provider.getTweet("1"), null));
             tx.success();
 
         }
     }
     */
+
 }
