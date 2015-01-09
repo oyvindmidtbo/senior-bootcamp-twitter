@@ -73,7 +73,7 @@ public class TwitterClient {
                 if (tweetHasRetweets(tweet)) {
                     try (Transaction tx = db.getDatabase().beginTx();) {
                         Conversation conversation = db.getConversationForTweet(tweet);
-                        if (conversation.getConversationSize() > 0) {
+                        if (conversation.getConversationSize() > 50) {
                             System.out.println(conversation.toJson());
                             hub.sendToAll(conversation);
                             tx.success();
