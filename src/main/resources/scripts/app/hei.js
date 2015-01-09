@@ -1,21 +1,23 @@
+var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+
 var Tweet = React.createClass({
     render: function() {
-        return <div className="tweet">
-	        <div className="panel panel-default">
-	        	<div className="panel-body">
-			        Fra <strong>{this.props.author}</strong><br />
-			        Melding: {this.props.children}
-			    </div>
-			    <div className="panel-footer">Replies: 5</div>
-		    </div>
-        </div>;
+        return <div className="tweet" key={this.props.keyToAnimate}>
+				<div className="panel panel-default">
+					<div className="panel-body">
+						Fra <strong>{this.props.author}</strong><br />
+						Melding: {this.props.children}
+					</div>
+					<div className="panel-footer">Replies: 5</div>
+				</div>
+			</div>;
     }
 });
 
 var TweetList = React.createClass({
     render: function() {
     	var tweetNodes = this.props.data.map(function (tweet) {
-				return <Tweet author={tweet.author} position="{index}" className="conversation">
+				return <Tweet keyToAnimate="{tweet}" author={tweet.author} className="conversation">
 					{tweet}
 				</Tweet>;
 		});
@@ -33,9 +35,9 @@ var TweetList = React.createClass({
 		});
 		*/
 
-		return <div>
+		return <ReactCSSTransitionGroup transitionName="example">
 			{ tweetNodes }
-		</div>;
+		</ReactCSSTransitionGroup>;
     }
 });
 
@@ -47,7 +49,7 @@ var Conversation = React.createClass({
 		var tweets = this.state.data;
 		var newTweets = tweets.concat([tweet]);
 
-		if(newTweets.length > 150) {
+		if(newTweets.length > 20) {
 			newTweets.splice(0, 1);
 		}
 		this.setState({data: newTweets});
