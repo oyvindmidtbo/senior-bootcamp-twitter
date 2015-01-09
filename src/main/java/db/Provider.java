@@ -60,10 +60,12 @@ public class Provider {
 
     public Node createTweet(Tweet tweet){
         GraphDatabaseService db = getDatabase();
+
         Node tweetNode = db.createNode();
-        tweetNode.setProperty( "text", tweet.getText() );
+
+        tweetNode.setProperty( "text", tweet.getText() != null ? tweet.getText() : "No Text" );
         tweetNode.setProperty( "userId", tweet.getUserId());
-        tweetNode.setProperty( "tweetId", tweet.getTweetId());
+        tweetNode.setProperty( "tweetId", tweet.getTweetId() != null ? tweet.getTweetId() : -1);
         if(tweet.getInReplyToStatusId() != null && tweet.getInReplyToStatusId().length() > 0){
             Node replyToNode = getTweet(tweet.getInReplyToStatusId());
             if(replyToNode != null) {
@@ -74,7 +76,6 @@ public class Provider {
                     new Tweet()
                         .setTweetId(tweet.getInReplyToStatusId())
                         .setText("?")
-                        .setUserId("-1")
                 );
                 tweetNode.createRelationshipTo(replyToNode, RelTypes.REPLY_TO);
             }

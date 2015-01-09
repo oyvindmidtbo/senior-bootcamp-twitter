@@ -1,5 +1,8 @@
 package twitter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
@@ -15,16 +18,19 @@ import db.Provider;
 import org.java_websocket.WebSocketImpl;
 import org.neo4j.graphdb.Transaction;
 import server.TwitterHub;
-import utilities.JsonParser;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TwitterClient {
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws IOException {
+
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
         Provider db = new Provider();
         ClientBuilder builder = createClientBuilder(msgQueue);
@@ -44,6 +50,10 @@ public class TwitterClient {
         hub.start();
         System.out.println("TwitterHub started on port: " + hub.getPort());
 
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH));
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
+
         while (!hosebirdClient.isDone()) {
             String msg = null;
             try {
@@ -51,7 +61,9 @@ public class TwitterClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
+
+
+            Tweet tweet = mapper.readValue(msg, Tweet.class);
 
                 if (tweet != null) {
                     try ( Transaction tx = db.getDatabase().beginTx(); ) {

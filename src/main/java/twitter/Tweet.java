@@ -1,13 +1,26 @@
 package twitter;
 
-import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Tweet {
-    
+
+
+    @JsonProperty(value = "id")
     private String tweetId;
-    private LocalDateTime createdAt;
-    private String userId;
+
+    private Date createdAt;
     private String text;
+
     private String inReplyToScreenName;
     private String inReplyToStatusId;
     private String inReplyToStatusIdStr;
@@ -15,6 +28,8 @@ public class Tweet {
     private String inReplyToUserIdStr;
     private boolean retweeted;
     private int retweetCount;
+
+    private User user;
 
     public String getText() {
         return text;
@@ -80,19 +95,25 @@ public class Tweet {
     }
 
     public String getUserId() {
-        return userId;
+        if (user == null)
+            return "-1";
+
+        return user.getId();
     }
 
-    public Tweet setUserId(String userId) {
-        this.userId = userId;
-        return this;
+    public User getUser() {
+        return user;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public Tweet setCreatedAt(LocalDateTime createdAt) {
+    public Tweet setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
         return this;
     }
