@@ -16,8 +16,14 @@ var Tweet = React.createClass({
 var TweetList = React.createClass({
     render: function() {
     	var tweetNodes = this.props.data.map(function (tweet) {
-    		console.log(tweet);
-    		tweet = $.parseJSON(tweet);
+    		try {
+    			tweet = $.parseJSON(tweet);
+    		}
+
+    		catch (e){
+    			//HAHA, nei.
+    			return;
+    		}
 			return <Tweet keyToAnimate="{tweet.id}" author={tweet.author} conversationSize={tweet.size} className="conversation">
 						{tweet.text}
 					</Tweet>;
