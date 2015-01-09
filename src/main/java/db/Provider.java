@@ -7,6 +7,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.traversal.*;
 import org.neo4j.kernel.impl.util.StringLogger;
 import scala.collection.Iterator;
+import twitter.Conversation;
 import twitter.Tweet;
 
 
@@ -148,18 +149,58 @@ public class Provider {
         return fullPath;
     }
 
+    public String getIdForConversationStart(Tweet end){
+        String retVal = end.getUserId();
+        Node node = getTweet(end.getUserId());
+        Path path = getPathToConversationStart(node);
+        retVal = (String)path.endNode().getProperty("tweetId");
+        return retVal;
+    }
 
-    public int getConversationSizeForId(long id){
-        return getAllChildren(getTweet(String.valueOf(id)), null).size();
+    public String getIdForConversationStart(String endId){
+        String retVal = endId;
+        Node node = getTweet(endId);
+        Path path = getPathToConversationStart(node);
+        retVal = (String)path.endNode().getProperty("tweetId");
+        return retVal;
+
     }
 
 
-    /*
+    public Node getNodeForConversationStart(String endId){
+        Node retVal = null;
+        Node node = getTweet(endId);
+        Path path = getPathToConversationStart(node);
+        retVal = path.endNode();
+        return retVal;
+
+    }
+
+
+    public int getConversationSizeForId(String id){
+        return getAllChildren(getTweet(id), null).size();
+    }
+
+    public Conversation getConversationForTweet(Tweet tweet){
+        Node topNode = getNodeForConversationStart(tweet.getTweetId());
+        int size = getConversationSizeForId(tweet.getTweetId());
+        String conversationId = (String)topNode.getProperty("tweetId");
+        String userId = (String)topNode.getProperty("userId");
+        Conversation conversation = new Conversation(size, conversationId, userId);
+        return conversation;
+    }
+
+
  //eksempel
 
     public static void main(String[] args){
         Provider provider = new Provider();
         GraphDatabaseService db = provider.getDatabase();
+        Tweet test =  new Tweet()
+                .setTweetId("3")
+                .setText("Tweeet tweeeeet")
+                .setUserId("2")
+                .setInReplyToStatusId("1");
         try ( Transaction tx = db.beginTx(); ) {
             provider.createTweet(
                     new Tweet()
@@ -185,19 +226,11 @@ public class Provider {
             );
 
             provider.createTweet(
-                    new Tweet()
-                            .setTweetId("3")
-                            .setText("Tweeet tweeeeet")
-                            .setUserId("2")
-                            .setInReplyToStatusId("1")
+                    test
             );
 
             provider.createTweet(
-                    new Tweet()
-                            .setTweetId("43")
-                            .setText("Tweeet tweeeeet")
-                            .setUserId("2")
-                            .setInReplyToStatusId("42")
+                  test
             );
 
             tx.success();
@@ -214,14 +247,14 @@ public class Provider {
                     System.out.println("\t" + propertyKey + " : " + tweet.getProperty(propertyKey));
                 }
             }
-            System.out.println(provider.getConversationSizeForId(1));
-
-
+            System.out.println(provider.getConversationSizeForId("1"));
+            System.out.println(provider.getConversationSizeForId(provider.getIdForConversationStart("3")));
+            System.out.println(provider.getConversationForTweet(test).getTweetId());
             tx.success();
 
         }
     }
-    */
+
 
 
 
