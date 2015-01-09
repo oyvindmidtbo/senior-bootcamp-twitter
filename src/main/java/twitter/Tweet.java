@@ -1,8 +1,11 @@
 package twitter;
 
+import java.time.LocalDateTime;
+
 public class Tweet {
     
     private String tweetId;
+    private LocalDateTime createdAt;
     private String userId;
     private String text;
     private String inReplyToScreenName;
@@ -80,6 +83,15 @@ public class Tweet {
 
     public Tweet setUserId(String userId) {
         this.userId = userId;
+        return this;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Tweet setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 }
