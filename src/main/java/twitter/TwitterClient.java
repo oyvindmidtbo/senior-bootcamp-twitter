@@ -63,25 +63,29 @@ public class TwitterClient {
             Tweet tweet = mapper.readValue(msg, Tweet.class);
 
             if (tweet != null && tweet.getTweetId() != null) {
-                try ( Transaction tx = db.getDatabase().beginTx(); ) {
+                try (Transaction tx = db.getDatabase().beginTx();) {
                     db.createTweet(tweet);
 
                     tx.success();
-                } catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (tweet.getRetweetedStatus() != null && !tweet.getRetweetedStatus().getTweetId().equals("null")) {
-                    try( Transaction tx = db.getDatabase().beginTx(); ){
+                if (tweetHasRetweets(tweet)) {
+                    try (Transaction tx = db.getDatabase().beginTx();) {
                         Conversation conversation = db.getConversationForTweet(tweet);
-                        if(conversation.getConversationSize() > 0){
+                        if (conversation.getConversationSize() > 0) {
                             System.out.println(conversation.toJson());
+                            hub.sendToAll(conversation);
+                            tx.success();
                         }
-                        hub.sendToAll(conversation);
-                        tx.success();
                     }
                 }
             }
         }
+    }
+
+    private static boolean tweetHasRetweets(Tweet tweet) {
+        return tweet.getRetweetedStatus() != null && !tweet.getRetweetedStatus().getTweetId().equals("null");
     }
 
     private static ClientBuilder createClientBuilder(BlockingQueue<String> msgQueue) {

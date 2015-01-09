@@ -14,15 +14,12 @@ public class Tweet {
 
     private Date createdAt;
     private String text;
-
     private String inReplyToScreenName;
     private String inReplyToStatusId;
     private String inReplyToUserId;
     private boolean retweeted;
     private int retweetCount;
-    
     private Tweet retweetedStatus;
-
     private User user;
 
     public String getText() {
