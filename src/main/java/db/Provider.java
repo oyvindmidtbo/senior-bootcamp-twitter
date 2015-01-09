@@ -56,7 +56,7 @@ public class Provider {
         return graphDb;
     }
 
-    public boolean createTweet(Tweet tweet){
+    public Node createTweet(Tweet tweet){
         GraphDatabaseService db = getDatabase();
         Node tweetNode = db.createNode();
         tweetNode.setProperty( "text", tweet.getText() );
@@ -67,11 +67,20 @@ public class Provider {
             if(replyToNode != null) {
                 tweetNode.createRelationshipTo(replyToNode, RelTypes.REPLY_TO);
             }
+            else{
+                replyToNode = createTweet(
+                    new Tweet()
+                        .setTweetId(tweet.getInReplyToStatusId())
+                        .setText("?")
+                        .setUserId("-1")
+                );
+                tweetNode.createRelationshipTo(replyToNode, RelTypes.REPLY_TO);
+            }
         }
         Label tweetLabel = DynamicLabel.label("Tweet");
         tweetNode.addLabel(tweetLabel);
 
-        return true;
+        return tweetNode;
     }
 
 
@@ -139,8 +148,9 @@ public class Provider {
         return fullPath;
     }
 
-    /*
+
  //eksempel
+    /*
     public static void main(String[] args){
         Provider provider = new Provider();
         GraphDatabaseService db = provider.getDatabase();
@@ -175,6 +185,15 @@ public class Provider {
                             .setUserId("2")
                             .setInReplyToStatusId("1")
             );
+
+            provider.createTweet(
+                    new Tweet()
+                            .setTweetId("43")
+                            .setText("Tweeet tweeeeet")
+                            .setUserId("2")
+                            .setInReplyToStatusId("42")
+            );
+
             tx.success();
         } catch(Exception e) {
             e.printStackTrace();
@@ -189,14 +208,14 @@ public class Provider {
                     System.out.println("\t" + propertyKey + " : " + tweet.getProperty(propertyKey));
                 }
             }
-            System.out.println(provider.getReplies(provider.getTweet("1")).size());
+            System.out.println(provider.getReplies(provider.getTweet("42")).size());
 
 
-            System.out.println(provider.getAllChildren(provider.getTweet("1"), null));
             tx.success();
 
         }
     }
     */
+
 
 }
