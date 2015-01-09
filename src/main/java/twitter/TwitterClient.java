@@ -52,20 +52,28 @@ public class TwitterClient {
                 e.printStackTrace();
             }
             Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
-            try ( Transaction tx = db.getDatabase().beginTx(); ) {
+
                 if (tweet != null) {
-
+                    try ( Transaction tx = db.getDatabase().beginTx(); ) {
                         db.createTweet(tweet);
-
+                        tx.success();
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
                     if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
-                        System.out.println((tweet.getText()));
-                        hub.sendToAll(tweet.getText());
+                       // System.out.println((tweet.getText()));
+                        try( Transaction tx = db.getDatabase().beginTx(); ){
+                            Conversation conversation = db.getConversationForTweet(tweet);
+
+
+                            System.out.println(conversation.toJson());
+                            hub.sendToAll(conversation);
+                            tx.success();
+                        }
                     }
                 }
-                tx.success();
-            } catch(Exception e){
-                e.printStackTrace();
-            }
+
+
         }
     }
 

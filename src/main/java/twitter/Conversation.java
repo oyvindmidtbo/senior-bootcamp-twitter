@@ -12,7 +12,8 @@ public class Conversation {
         conversationSize = size;
         tweetId = msgId;
         userId = user;
-        String text = msg;
+        text = msg;
+
     }
 
     public String getText() {
@@ -21,6 +22,10 @@ public class Conversation {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String toJson(){
+        return "{\"id\":" + tweetId + ",\"size\":" + conversationSize + ",\"text\":" + text + "}";
     }
 
     public int getConversationSize() {

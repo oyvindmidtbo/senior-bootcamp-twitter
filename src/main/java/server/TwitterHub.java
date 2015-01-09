@@ -4,6 +4,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import twitter.Conversation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,6 +44,15 @@ public class TwitterHub extends WebSocketServer {
         synchronized ( con ) {
             for( WebSocket c : con ) {
                 c.send( message );
+            }
+        }
+    }
+
+    public void sendToAll(Conversation conversation){
+        Collection<WebSocket> con = connections();
+        synchronized ( con ) {
+            for( WebSocket c : con ) {
+               c.send( conversation.toJson() );
             }
         }
     }

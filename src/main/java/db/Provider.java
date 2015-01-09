@@ -19,7 +19,8 @@ public class Provider {
     GraphDatabaseService graphDb;
     private static enum RelTypes implements RelationshipType
     {
-        REPLY_TO
+        REPLY_TO,
+        RETWEET
     }
 
     private GraphDatabaseService createDatabase(){
@@ -168,9 +169,8 @@ public class Provider {
 
 
     public Node getNodeForConversationStart(String endId){
-        Node retVal = null;
-        Node node = getTweet(endId);
-        Path path = getPathToConversationStart(node);
+        Node retVal = getTweet(endId);
+        Path path = getPathToConversationStart(retVal);
         retVal = path.endNode();
         return retVal;
 
@@ -178,7 +178,7 @@ public class Provider {
 
 
     public int getConversationSizeForId(String id){
-        return getAllChildren(getTweet(id), null).size();
+        return getAllChildren(getTweet(id), null).size()+1;
     }
 
     public Conversation getConversationForTweet(Tweet tweet){
@@ -187,6 +187,7 @@ public class Provider {
         String conversationId = (String)topNode.getProperty("tweetId");
         String userId = (String)topNode.getProperty("userId");
         String text = (String)topNode.getProperty("text");
+
         Conversation conversation = new Conversation(size, conversationId, userId, text);
         return conversation;
     }
