@@ -63,11 +63,13 @@ public class Provider {
 
         Node tweetNode = db.createNode();
 
-        tweetNode.setProperty( "text", tweet.getText() != null ? tweet.getText() : "No Text" );
+        tweetNode.setProperty( "text", tweet.getText() != null ? tweet.getText() :
+                tweet.getRetweetedStatus().getText() != null ? tweet.getRetweetedStatus().getText() : "No Text");
         tweetNode.setProperty( "userId", tweet.getUserId());
         tweetNode.setProperty( "tweetId", tweet.getTweetId() != null ? tweet.getTweetId() : -1);
         if(tweet.getInReplyToStatusId() != null && tweet.getInReplyToStatusId().length() > 0){
             Node replyToNode = getTweet(tweet.getInReplyToStatusId());
+
             if(replyToNode != null) {
                 tweetNode.createRelationshipTo(replyToNode, RelTypes.REPLY_TO);
             }
@@ -78,6 +80,20 @@ public class Provider {
                         .setText("?")
                 );
                 tweetNode.createRelationshipTo(replyToNode, RelTypes.REPLY_TO);
+            }
+        }
+        if(tweet.getRetweetedStatus() != null){
+            Node reTweetNode = getTweet(tweet.getRetweetedStatus().getTweetId());
+            if(reTweetNode != null) {
+                tweetNode.createRelationshipTo(reTweetNode, RelTypes.RETWEET);
+            }
+            else{
+                reTweetNode = createTweet(
+                        new Tweet()
+                                .setTweetId(tweet.getRetweetedStatus().getTweetId())
+                                .setText(tweet.getRetweetedStatus().getText())
+                );
+                tweetNode.createRelationshipTo(reTweetNode, RelTypes.RETWEET);
             }
         }
         Label tweetLabel = DynamicLabel.label("Tweet");
@@ -110,7 +126,7 @@ public class Provider {
         ExecutionEngine engine = new ExecutionEngine( getDatabase(), StringLogger.DEV_NULL );
         GraphDatabaseService db = getDatabase();
 
-        for (Relationship relationship : node.getRelationships(RelTypes.REPLY_TO, Direction.INCOMING)) {
+        for (Relationship relationship : node.getRelationships(RelTypes.RETWEET, Direction.INCOMING)) {
             replies.add(relationship.getStartNode());
         }
 
@@ -127,7 +143,7 @@ public class Provider {
 
         for(Node node : getReplies(top)){
             replies.add(node);
-            if(node.hasRelationship(RelTypes.REPLY_TO, Direction.INCOMING)) {
+            if(node.hasRelationship(RelTypes.RETWEET, Direction.INCOMING)) {
                 replies.addAll(getAllChildren(node, replies));
             }
         }
@@ -141,7 +157,7 @@ public class Provider {
 
             TraversalDescription td = db.traversalDescription()
                     .depthFirst()
-                    .relationships(RelTypes.REPLY_TO, Direction.OUTGOING)
+                    .relationships(RelTypes.RETWEET, Direction.OUTGOING)
                     .evaluator(Evaluators.all());
 
             org.neo4j.graphdb.traversal.Traverser traversal = td.traverse(end);
@@ -183,9 +199,12 @@ public class Provider {
     }
 
     public Conversation getConversationForTweet(Tweet tweet){
-        Node topNode = getNodeForConversationStart(tweet.getTweetId());
-        int size = getConversationSizeForId(tweet.getTweetId());
-        String conversationId = (String)topNode.getProperty("tweetId");
+
+        String id = tweet.getTweetId() != null ? tweet.getTweetId() : tweet.getRetweetedStatus().getTweetId();
+        Node topNode = getNodeForConversationStart(id);
+        int size = getConversationSizeForId(id);
+        System.out.println(id);
+        String conversationId = String.valueOf(topNode.getProperty("tweetId"));
         String userId = (String)topNode.getProperty("userId");
         String text = (String)topNode.getProperty("text");
 
@@ -196,45 +215,35 @@ public class Provider {
 
  //eksempel
 
-    /*
+
     public static void main(String[] args){
         Provider provider = new Provider();
         GraphDatabaseService db = provider.getDatabase();
         Tweet test =  new Tweet()
                 .setTweetId("3")
                 .setText("Tweeet tweeeeet")
-                .setUserId("2")
                 .setInReplyToStatusId("1");
         try ( Transaction tx = db.beginTx(); ) {
             provider.createTweet(
                     new Tweet()
                             .setTweetId("1")
-                            .setText("Tweeet tweeeeet")
-                            .setUserId("1")
+                            .setRetweetedStatus(test)
             );
 
             provider.createTweet(
                     new Tweet()
                             .setTweetId("2")
-                            .setText("Tweeet tweeeeet")
-                            .setUserId("2")
-                            .setInReplyToStatusId("1")
+                            .setRetweetedStatus(test)
             );
 
             provider.createTweet(
                     new Tweet()
-                            .setTweetId("3")
-                            .setText("Tweeet tweeeeet")
-                            .setUserId("2")
-                            .setInReplyToStatusId("2")
+                            .setTweetId("2")
+                            .setRetweetedStatus(test)
             );
 
             provider.createTweet(
                     test
-            );
-
-            provider.createTweet(
-                  test
             );
 
             tx.success();
@@ -252,13 +261,13 @@ public class Provider {
                 }
             }
             System.out.println(provider.getConversationSizeForId("1"));
-            System.out.println(provider.getConversationSizeForId(provider.getIdForConversationStart("3")));
+            System.out.println(provider.getConversationSizeForId(provider.getIdForConversationStart("1")));
             System.out.println(provider.getConversationForTweet(test).getTweetId());
             tx.success();
 
         }
     }
-    */
+
 
 
 
