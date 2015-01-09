@@ -6,9 +6,9 @@ import java.util.Properties;
 
 public class TwitterAuthentication {
     
-    private Properties getProperties() {
+    private static Properties getProperties() {
         Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("twitter-authentication.properties");
+        InputStream inputStream = TwitterAuthentication.class.getClassLoader().getResourceAsStream("twitter-authentication.properties");
 
         if (inputStream != null) {
             try {
@@ -22,19 +22,19 @@ public class TwitterAuthentication {
         return properties;
     }
     
-    public String getConsumerKey() {
+    public static String getConsumerKey() {
         return getProperties().getProperty("consumerKey");
     }
 
-    public String getConsumerSecret() {
+    public static String getConsumerSecret() {
         return getProperties().getProperty("consumerSecret");
     }
 
-    public String getAccessToken() {
+    public static String getAccessToken() {
         return getProperties().getProperty("accessToken");
     }
 
-    public String getAccessTokenSecret() {
+    public static String getAccessTokenSecret() {
         return getProperties().getProperty("accessTokenSecret");
     }
 }

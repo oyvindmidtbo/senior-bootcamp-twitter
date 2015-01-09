@@ -25,8 +25,6 @@ public class TwitterClient {
 
 
     public static void main(String[] args) throws UnknownHostException {
-        TwitterAuthentication twitterAuthentication = new TwitterAuthentication();
-
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
         BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
 
@@ -41,8 +39,8 @@ public class TwitterClient {
         hosebirdEndpoint.trackTerms(terms);
 
         // These secrets should be read from a config file
-        Authentication hosebirdAuth = new OAuth1(twitterAuthentication.getConsumerKey(), twitterAuthentication.getConsumerSecret(), 
-                twitterAuthentication.getAccessToken(), twitterAuthentication.getAccessTokenSecret());
+        Authentication hosebirdAuth = new OAuth1(TwitterAuthentication.getConsumerKey(), TwitterAuthentication.getConsumerSecret(),
+                TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
         
         ClientBuilder builder = new ClientBuilder()
                 .name("Hosebird-Client-01")                              // optional: mainly for the logs
