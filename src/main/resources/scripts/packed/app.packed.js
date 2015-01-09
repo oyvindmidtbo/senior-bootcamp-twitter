@@ -7,7 +7,7 @@ var Tweet = React.createClass({
 					<div className="panel-body">
 						{this.props.children}
 					</div>
-					<div className="panel-footer">Replies: {this.props.conversationSize}</div>
+					<div className="panel-footer">Retweets: {this.props.conversationSize}</div>
 				</div>
 			</div>;
     }
