@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 public class TwitterClientTest {
 
@@ -20,9 +21,9 @@ public class TwitterClientTest {
             "\t\"source\":\"\\u003ca href=\\\"http:\\/\\/twitter.com\\/download\\/android\\\" rel=\\\"nofollow\\\"\\u003eTwitter for Android\\u003c\\/a\\u003e\",\n" +
             "\t\"truncated\":false,\n" +
             "\t\"in_reply_to_status_id\":1234,\n" +
-            "\t\"in_reply_to_status_id_str\":\"statusId\",\n" +
-            "\t\"in_reply_to_user_id\":1234,\n" +
-            "\t\"in_reply_to_user_id_str\":\"userId\",\n" +
+            "\t\"in_reply_to_status_id_str\":\"1234\",\n" +
+            "\t\"in_reply_to_user_id\":4567,\n" +
+            "\t\"in_reply_to_user_id_str\":\"4567\",\n" +
             "\t\"in_reply_to_screen_name\":\"olaNordmann\",\n" +
             "\t\"user\":\n" +
             "\t{\n" +
@@ -68,12 +69,10 @@ public class TwitterClientTest {
 
         Tweet deSerializedTweet = mapper.readValue(tweet, Tweet.class);
 
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getTweetId()));
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToScreenName()));
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToStatusId()));
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToStatusIdStr()));
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToUserId()));
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToUserIdStr()));
-        assertNotNull(StringUtils.isBlank(deSerializedTweet.getRetweetedStatus().getTweetId()));
+        assertEquals("553499452359852032", deSerializedTweet.getTweetId());
+        assertNotNull("olaNordmann", deSerializedTweet.getInReplyToScreenName());
+        assertNotNull("1234", deSerializedTweet.getInReplyToStatusId());
+        assertNotNull("4567", deSerializedTweet.getInReplyToUserId());
+        assertNotNull("551213330895892481", deSerializedTweet.getRetweetedStatus().getTweetId());
     }
 }

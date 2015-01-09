@@ -21,60 +21,62 @@ public class TwitterHub extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        System.out.println( webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " opened connection!" );
+        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " opened connection!");
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, java.lang.String s, boolean b) {
-        System.out.println( webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " closed connection!" );
+        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " closed connection!");
     }
 
     @Override
     public void onMessage(WebSocket webSocket, java.lang.String s) {
-        System.out.println( webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " sent something: " + s );
+        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " sent something: " + s);
     }
 
     @Override
     public void onError(WebSocket webSocket, java.lang.Exception e) {
-        System.out.println( webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " got exception: " + e.getMessage());
+        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " got exception: " + e.getMessage());
     }
 
     public void sendToAll(String message) {
         Collection<WebSocket> con = connections();
-        synchronized ( con ) {
-            for( WebSocket c : con ) {
-                c.send( message );
+        synchronized (con) {
+            for (WebSocket c : con) {
+                c.send(message);
             }
         }
     }
 
-    public void sendToAll(Conversation conversation){
+    public void sendToAll(Conversation conversation) {
         Collection<WebSocket> con = connections();
-        synchronized ( con ) {
-            for( WebSocket c : con ) {
-               c.send( conversation.toJson() );
+        synchronized (con) {
+            for (WebSocket c : con) {
+                c.send(conversation.toJson());
             }
         }
     }
 
-    public static void main( String[] args ) throws InterruptedException , IOException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         WebSocketImpl.DEBUG = true;
         int port = 8887; // 843 flash policy port
+        
         try {
-            port = Integer.parseInt( args[ 0 ] );
-        } catch ( Exception ex ) {
+            port = Integer.parseInt(args[0]);
+        } catch (Exception ignored) {
         }
-        TwitterHub hub = new TwitterHub( port );
+        
+        TwitterHub hub = new TwitterHub(port);
         hub.start();
         System.out.println("TwitterHub started on port: " + hub.getPort());
 
-        BufferedReader sysin = new BufferedReader( new InputStreamReader( System.in ) );
-        while ( true ) {
+        BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
+        while (true) {
             String in = sysin.readLine();
-            if( in.equals( "exit" ) ) {
+            if (in.equals("exit")) {
                 hub.stop();
                 break;
-            } else if( in.equals( "restart" ) ) {
+            } else if (in.equals("restart")) {
                 hub.stop();
                 hub.start();
                 break;
