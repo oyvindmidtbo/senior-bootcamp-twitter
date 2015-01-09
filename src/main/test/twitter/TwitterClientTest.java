@@ -2,7 +2,6 @@ package twitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
