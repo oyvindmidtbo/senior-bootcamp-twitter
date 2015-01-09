@@ -1,38 +1,27 @@
-var conversations = [
-{tweet: [
-	{
-		author: "Hanne",
-		message: "Hei, dette er en første tweet!"
-	},
-	{
-		author: "Øyvind",
-		message: "Så tøft da!"
-	},
-	{
-		author: "Hanne",
-		message: "Itj sant?!"
-	},
-	{
-		author: "Øyvind",
-		message: "You rock!"
-	}]}
-]
-
-
 var Tweet = React.createClass({
     render: function() {
         return <div className="tweet">
-        Fra <strong>{this.props.author}</strong><br />
-        {this.props.children}
-
+	        <div className="panel panel-default">
+	        	<div className="panel-body">
+			        Fra <strong>{this.props.author}</strong><br />
+			        Melding: {this.props.children}
+			    </div>
+			    <div className="panel-footer">Replies: 5</div>
+		    </div>
         </div>;
     }
 });
 
 var TweetList = React.createClass({
     render: function() {
-    	console.log(this.props.data);
-    	var conversationNodes = this.props.data.map(function (tweets) {
+    	var tweetNodes = this.props.data.map(function (tweet) {
+				return <Tweet author={tweet.author} position="{index}" className="conversation">
+					{tweet}
+				</Tweet>;
+		});
+
+		/*
+			var conversationNodes = this.props.data.map(function (tweets) {
     		var tweetNodes = tweets.tweet.map(function (tweet, index) {
     			console.log(index);
 				return <Tweet author={tweet.author} position="{index}" className="conversation">
@@ -42,55 +31,51 @@ var TweetList = React.createClass({
 
 			return tweetNodes;
 		});
+		*/
 
 		return <div>
-		{ conversationNodes }
+			{ tweetNodes }
 		</div>;
     }
 });
 
 var Conversation = React.createClass({
+	getInitialState: function() {
+		return {data: []};
+	},
 	addTweet: function(tweet) {
 		var tweets = this.state.data;
 		var newTweets = tweets.concat([tweet]);
 
-		if(newTweets.length > 15) {
+		if(newTweets.length > 150) {
 			newTweets.splice(0, 1);
 		}
 		this.setState({data: newTweets});
 	},
-	getInitialState: function() {
-		return {data: []};
-	},
 	componentWillMount: function() {
-
-		//var socket = io.connect();
-		//var self = this;
-
-		//socket.on('info', function (data) {
-		//	self.addTweet(data.tweet);
-		//});
+		this.setState({data: []});
 
 		var ws;
+		var that = this;
 
 		var stopWebsocket = function() {
 			ws.close();
 			ws = null;
-			console.log("[WebSocket#onclose]\n");
+			console.log("WebSocket connection closed");
 		};
 
 		var startWebsocket = function() {
 			if (!window.WebSocket) {
-				alert("FATAL: WebSocket not natively supported. This demo will not work!");
+				alert("FATAL: WebSocket not natively supported :(");
 			}
 
 			ws = new WebSocket("ws://localhost:8887");
 			ws.onopen = function() {
-				console.log("[WebSocket#onopen]\n");
+				console.log("WebSocket connection opened");
 			}
 			ws.onmessage = function(e) {
-				console.log("[WebSocket#onmessage] Message: '" + e.data + "'\n");
-				this.state.data = e.data;
+				console.log("Message: '" + e.data + "'\n");
+				that.addTweet(e.data);
 			}
 		};
 		
@@ -111,7 +96,6 @@ var Conversation = React.createClass({
 
 	render: function() {
 		return <div className="conversation">
-			<h3>Dette er en samtale</h3>
 			<TweetList data={this.state.data} />
 		</div>;
 	}
