@@ -32,9 +32,10 @@ var Tweet = React.createClass({
 var TweetList = React.createClass({
     render: function() {
     	console.log(this.props.data);
-    	var conversationNodes = conversations.map(function (tweets) {
-    		var tweetNodes = tweets.tweet.map(function (tweet) {
-				return <Tweet author={tweet.author} className="conversation">
+    	var conversationNodes = this.props.data.map(function (tweets) {
+    		var tweetNodes = tweets.tweet.map(function (tweet, index) {
+    			console.log(index);
+				return <Tweet author={tweet.author} position="{index}" className="conversation">
 					{tweet.message}
 				</Tweet>;
 			});
@@ -49,29 +50,69 @@ var TweetList = React.createClass({
 });
 
 var Conversation = React.createClass({
-	loadTweetsFromServer: function() {
-		return conversations;
-		/*$.ajax({
-			url: this.props.url,
-			dataType: 'json',
-			success: function(data) {
-				this.setState({data: data});
-			}.bind(this),
-			error: function(xhr, status, err) {
-				console.error(this.props.url, status, err.toString());
-			}.bind(this)
-			});*/
+	addTweet: function(tweet) {
+		var tweets = this.state.data;
+		var newTweets = tweets.concat([tweet]);
+
+		if(newTweets.length > 15) {
+			newTweets.splice(0, 1);
+		}
+		this.setState({data: newTweets});
 	},
 	getInitialState: function() {
 		return {data: []};
 	},
-	componentDidMount: function() {
-		this.loadTweetsFromServer();
+	componentWillMount: function() {
+
+		//var socket = io.connect();
+		//var self = this;
+
+		//socket.on('info', function (data) {
+		//	self.addTweet(data.tweet);
+		//});
+
+		var ws;
+
+		var stopWebsocket = function() {
+			ws.close();
+			ws = null;
+			console.log("[WebSocket#onclose]\n");
+		};
+
+		var startWebsocket = function() {
+			if (!window.WebSocket) {
+				alert("FATAL: WebSocket not natively supported. This demo will not work!");
+			}
+
+			ws = new WebSocket("ws://localhost:8887");
+			ws.onopen = function() {
+				console.log("[WebSocket#onopen]\n");
+			}
+			ws.onmessage = function(e) {
+				console.log("[WebSocket#onmessage] Message: '" + e.data + "'\n");
+				this.state.data = e.data;
+			}
+		};
+		
+		$(".stop").click(function(e) {
+			stopWebsocket();
+			$(".start, .stop").toggleClass("hidden");
+		});
+
+		$(".start").click(function(e) {
+			startWebsocket();
+
+			$(".start, .stop").toggleClass("hidden");
+		});
+
+
+		startWebsocket();
 	},
+
 	render: function() {
 		return <div className="conversation">
 			<h3>Dette er en samtale</h3>
-			<TweetList />
+			<TweetList data={this.state.data} />
 		</div>;
 	}
 });

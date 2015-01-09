@@ -1,5 +1,6 @@
 package twitter;
 
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,27 +8,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect
-@JsonNaming(value = PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
 public class Tweet {
 
 
     @JsonProperty(value = "id")
     private String tweetId;
 
+    private Date createdAt;
     private String text;
 
-    @JsonProperty(value = "in_reply_to_screen_name")
     private String inReplyToScreenName;
-    @JsonProperty(value = "in_reply_to_status_id")
     private String inReplyToStatusId;
-    @JsonProperty(value = "in_reply_to_status_id_str")
     private String inReplyToStatusIdStr;
-    @JsonProperty(value = "in_reply_to_user_id")
     private String inReplyToUserId;
-    @JsonProperty(value = "in_reply_to_user_id_str")
     private String inReplyToUserIdStr;
+    private boolean retweeted;
+    private int retweetCount;
 
     private User user;
 
@@ -95,6 +95,9 @@ public class Tweet {
     }
 
     public String getUserId() {
+        if (user == null)
+            return "-1";
+
         return user.getId();
     }
 
@@ -106,4 +109,30 @@ public class Tweet {
         this.user = user;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Tweet setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public boolean isRetweeted() {
+        return retweeted;
+    }
+
+    public Tweet setRetweeted(boolean retweeted) {
+        this.retweeted = retweeted;
+        return this;
+    }
+
+    public int getRetweetCount() {
+        return retweetCount;
+    }
+
+    public Tweet setRetweetCount(int retweetCount) {
+        this.retweetCount = retweetCount;
+        return this;
+    }
 }

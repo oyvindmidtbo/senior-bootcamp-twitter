@@ -1,5 +1,8 @@
 package twitter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
@@ -13,10 +16,12 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import org.java_websocket.WebSocketImpl;
 import server.TwitterHub;
-import utilities.JsonParser;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -24,9 +29,7 @@ public class TwitterClient {
 
 
 
-    public static void main(String[] args) throws UnknownHostException {
-        TwitterAuthentication twitterAuthentication = new TwitterAuthentication();
-
+    public static void main(String[] args) throws IOException {
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
         BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
 
@@ -41,8 +44,8 @@ public class TwitterClient {
         hosebirdEndpoint.trackTerms(terms);
 
         // These secrets should be read from a config file
-        Authentication hosebirdAuth = new OAuth1(twitterAuthentication.getConsumerKey(), twitterAuthentication.getConsumerSecret(), 
-                twitterAuthentication.getAccessToken(), twitterAuthentication.getAccessTokenSecret());
+        Authentication hosebirdAuth = new OAuth1(TwitterAuthentication.getConsumerKey(), TwitterAuthentication.getConsumerSecret(),
+                TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
         
         ClientBuilder builder = new ClientBuilder()
                 .name("Hosebird-Client-01")                              // optional: mainly for the logs
@@ -67,6 +70,10 @@ public class TwitterClient {
         hub.start();
         System.out.println("TwitterHub started on port: " + hub.getPort());
 
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH));
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
+
         while (!hosebirdClient.isDone()) {
             String msg = null;
             try {
@@ -74,10 +81,10 @@ public class TwitterClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
+            Tweet tweet = mapper.readValue(msg, Tweet.class);
             
             if (tweet != null) {
-                if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
+                if (tweet.getInReplyToStatusId() != null && tweet.getInReplyToStatusId() != null) {
                     System.out.println((tweet.getText()));
                     hub.sendToAll(tweet.getText());
                 }

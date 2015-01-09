@@ -2,9 +2,12 @@ package twitter;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by Stig-Rune Skansgård on 09.01.2015.
@@ -58,6 +61,9 @@ public class SerializerTest {
 
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
+        mapper.setDateFormat(new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH));
+
         Tweet deSerializedTweet = mapper.readValue(tweet, Tweet.class);
 
 

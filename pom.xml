@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <jackson.version>2.4.4</jackson.version>
+        <jackson.version>2.5.0</jackson.version>
     </properties>
 
     <dependencies>
@@ -27,12 +27,6 @@
             <groupId>com.twitter</groupId>
             <artifactId>hbc-core</artifactId> <!-- or hbc-twitter4j -->
             <version>2.2.0</version> <!-- or whatever the latest version is -->
-        </dependency>
-
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20090211</version>
         </dependency>
 
         <dependency>
@@ -58,8 +52,13 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.0.1</version>
         </dependency>
-
-
+        
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
 </project>
