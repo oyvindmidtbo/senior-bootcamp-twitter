@@ -14,7 +14,9 @@ import com.twitter.hbc.core.event.Event;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+import db.Provider;
 import org.java_websocket.WebSocketImpl;
+import org.neo4j.graphdb.Transaction;
 import server.TwitterHub;
 
 import java.io.IOException;
@@ -27,46 +29,24 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class TwitterClient {
 
-
-
     public static void main(String[] args) throws IOException {
+
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
-        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
-
-        /** Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth) */
-        Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
-        StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-
-        // Optional: set up some followings and track terms
-        List<Long> followings = Lists.newArrayList(1234L, 566788L);
-        List<String> terms = Lists.newArrayList("twitter", "api");
-        hosebirdEndpoint.followings(followings);
-        hosebirdEndpoint.trackTerms(terms);
-
-        // These secrets should be read from a config file
-        Authentication hosebirdAuth = new OAuth1(TwitterAuthentication.getConsumerKey(), TwitterAuthentication.getConsumerSecret(),
-                TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
-        
-        ClientBuilder builder = new ClientBuilder()
-                .name("Hosebird-Client-01")                              // optional: mainly for the logs
-                .hosts(hosebirdHosts)
-                .authentication(hosebirdAuth)
-                .endpoint(hosebirdEndpoint)
-                .processor(new StringDelimitedProcessor(msgQueue))
-                .eventMessageQueue(eventQueue);                          // optional: use this if you want to process client events
-
+        Provider db = new Provider();
+        ClientBuilder builder = createClientBuilder(msgQueue);
         Client hosebirdClient = builder.build();
-        
-        // Attempts to establish a connection.
+
         hosebirdClient.connect();
 
         WebSocketImpl.DEBUG = true;
         int port = 8887; // 843 flash policy port
+
         try {
-            port = Integer.parseInt( args[ 0 ] );
-        } catch ( Exception ignored) {
+            port = Integer.parseInt(args[0]);
+        } catch (Exception ignored) {
         }
-        TwitterHub hub = new TwitterHub( port );
+
+        TwitterHub hub = new TwitterHub(port);
         hub.start();
         System.out.println("TwitterHub started on port: " + hub.getPort());
 
@@ -81,14 +61,46 @@ public class TwitterClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             Tweet tweet = mapper.readValue(msg, Tweet.class);
-            
-            if (tweet != null) {
-                if (tweet.getInReplyToStatusId() != null && tweet.getInReplyToStatusId() != null) {
-                    System.out.println((tweet.getText()));
-                    hub.sendToAll(tweet.getText());
+            try ( Transaction tx = db.getDatabase().beginTx(); ) {
+                if (tweet != null) {
+
+                        db.createTweet(tweet);
+
+                    if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
+                        System.out.println((tweet.getText()));
+                        hub.sendToAll(tweet.getText());
+                    }
                 }
+                tx.success();
+            } catch(Exception e){
+                e.printStackTrace();
             }
         }
+    }
+
+    private static ClientBuilder createClientBuilder(BlockingQueue<String> msgQueue) {
+        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
+
+        Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
+        StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
+
+        List<Long> followings = Lists.newArrayList(1234L, 566788L);
+        List<String> terms = Lists.newArrayList("twitter", "api");
+        hosebirdEndpoint.followings(followings);
+        hosebirdEndpoint.trackTerms(terms);
+
+        Authentication hosebirdAuth = new OAuth1(TwitterAuthentication.getConsumerKey(), TwitterAuthentication.getConsumerSecret(),
+                TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
+
+        return new ClientBuilder()
+                .name("Hosebird-Client-01")                              // optional: mainly for the logs
+                .hosts(hosebirdHosts)
+                .authentication(hosebirdAuth)
+                .endpoint(hosebirdEndpoint)
+                .processor(new StringDelimitedProcessor(msgQueue))
+                .eventMessageQueue(eventQueue);
+
     }
 }
