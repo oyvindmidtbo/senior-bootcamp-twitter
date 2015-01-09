@@ -60,30 +60,26 @@ public class TwitterClient {
                 e.printStackTrace();
             }
 
-
             Tweet tweet = mapper.readValue(msg, Tweet.class);
 
-                if (tweet != null) {
-                    try ( Transaction tx = db.getDatabase().beginTx(); ) {
-                        db.createTweet(tweet);
+            if (tweet != null) {
+                try (Transaction tx = db.getDatabase().beginTx();) {
+                    db.createTweet(tweet);
+                    tx.success();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
+                    System.out.println((tweet.getText()));
+                    try (Transaction tx = db.getDatabase().beginTx();) {
+                        Conversation conversation = db.getConversationForTweet(tweet);
+
+                        System.out.println(conversation.toJson());
+                        hub.sendToAll(conversation);
                         tx.success();
-                    } catch(Exception e){
-                        e.printStackTrace();
-                    }
-                    if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
-                       // System.out.println((tweet.getText()));
-                        try( Transaction tx = db.getDatabase().beginTx(); ){
-                            Conversation conversation = db.getConversationForTweet(tweet);
-
-
-                            System.out.println(conversation.toJson());
-                            hub.sendToAll(conversation);
-                            tx.success();
-                        }
                     }
                 }
-
-
+            }
         }
     }
 
@@ -102,7 +98,7 @@ public class TwitterClient {
                 TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
 
         return new ClientBuilder()
-                .name("Hosebird-Client-01")                              // optional: mainly for the logs
+                .name("Hosebird-Client-01")
                 .hosts(hosebirdHosts)
                 .authentication(hosebirdAuth)
                 .endpoint(hosebirdEndpoint)
