@@ -149,8 +149,14 @@ public class Provider {
     }
 
 
- //eksempel
+    public int getConversationSizeForId(long id){
+        return getAllChildren(getTweet(String.valueOf(id)), null).size();
+    }
+
+
     /*
+ //eksempel
+
     public static void main(String[] args){
         Provider provider = new Provider();
         GraphDatabaseService db = provider.getDatabase();
@@ -208,7 +214,7 @@ public class Provider {
                     System.out.println("\t" + propertyKey + " : " + tweet.getProperty(propertyKey));
                 }
             }
-            System.out.println(provider.getReplies(provider.getTweet("42")).size());
+            System.out.println(provider.getConversationSizeForId(1));
 
 
             tx.success();
@@ -216,6 +222,7 @@ public class Provider {
         }
     }
     */
+
 
 
 }
