@@ -186,13 +186,15 @@ public class Provider {
         int size = getConversationSizeForId(tweet.getTweetId());
         String conversationId = (String)topNode.getProperty("tweetId");
         String userId = (String)topNode.getProperty("userId");
-        Conversation conversation = new Conversation(size, conversationId, userId);
+        String text = (String)topNode.getProperty("text");
+        Conversation conversation = new Conversation(size, conversationId, userId, text);
         return conversation;
     }
 
 
  //eksempel
 
+    /*
     public static void main(String[] args){
         Provider provider = new Provider();
         GraphDatabaseService db = provider.getDatabase();
@@ -254,6 +256,7 @@ public class Provider {
 
         }
     }
+    */
 
 
 

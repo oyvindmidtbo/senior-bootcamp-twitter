@@ -11,7 +11,9 @@ import com.twitter.hbc.core.event.Event;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+import db.Provider;
 import org.java_websocket.WebSocketImpl;
+import org.neo4j.graphdb.Transaction;
 import server.TwitterHub;
 import utilities.JsonParser;
 
@@ -24,7 +26,7 @@ public class TwitterClient {
 
     public static void main(String[] args) throws UnknownHostException {
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
-
+        Provider db = new Provider();
         ClientBuilder builder = createClientBuilder(msgQueue);
         Client hosebirdClient = builder.build();
 
@@ -50,12 +52,19 @@ public class TwitterClient {
                 e.printStackTrace();
             }
             Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
+            try ( Transaction tx = db.getDatabase().beginTx(); ) {
+                if (tweet != null) {
 
-            if (tweet != null) {
-                if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
-                    System.out.println((tweet.getText()));
-                    hub.sendToAll(tweet.getText());
+                        db.createTweet(tweet);
+
+                    if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
+                        System.out.println((tweet.getText()));
+                        hub.sendToAll(tweet.getText());
+                    }
                 }
+                tx.success();
+            } catch(Exception e){
+                e.printStackTrace();
             }
         }
     }
