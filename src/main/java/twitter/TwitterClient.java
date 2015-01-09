@@ -1,6 +1,5 @@
 package twitter;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.collect.Lists;
@@ -20,7 +19,6 @@ import org.neo4j.graphdb.Transaction;
 import server.TwitterHub;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -62,30 +60,26 @@ public class TwitterClient {
                 e.printStackTrace();
             }
 
-
             Tweet tweet = mapper.readValue(msg, Tweet.class);
 
-                if (tweet != null) {
-                    try ( Transaction tx = db.getDatabase().beginTx(); ) {
-                        db.createTweet(tweet);
+            if (tweet != null) {
+                try (Transaction tx = db.getDatabase().beginTx();) {
+                    db.createTweet(tweet);
+                    tx.success();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
+                    System.out.println((tweet.getText()));
+                    try (Transaction tx = db.getDatabase().beginTx();) {
+                        Conversation conversation = db.getConversationForTweet(tweet);
+
+                        System.out.println(conversation.toJson());
+                        hub.sendToAll(conversation);
                         tx.success();
-                    } catch(Exception e){
-                        e.printStackTrace();
-                    }
-                    if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
-                       // System.out.println((tweet.getText()));
-                        try( Transaction tx = db.getDatabase().beginTx(); ){
-                            Conversation conversation = db.getConversationForTweet(tweet);
-
-
-                            System.out.println(conversation.toJson());
-                            hub.sendToAll(conversation);
-                            tx.success();
-                        }
                     }
                 }
-
-
+            }
         }
     }
 
@@ -96,7 +90,7 @@ public class TwitterClient {
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
 
         List<Long> followings = Lists.newArrayList(1234L, 566788L);
-        List<String> terms = Lists.newArrayList("twitter", "api");
+        List<String> terms = Lists.newArrayList("jesuischarlie");
         hosebirdEndpoint.followings(followings);
         hosebirdEndpoint.trackTerms(terms);
 
@@ -104,7 +98,7 @@ public class TwitterClient {
                 TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
 
         return new ClientBuilder()
-                .name("Hosebird-Client-01")                              // optional: mainly for the logs
+                .name("Hosebird-Client-01")
                 .hosts(hosebirdHosts)
                 .authentication(hosebirdAuth)
                 .endpoint(hosebirdEndpoint)

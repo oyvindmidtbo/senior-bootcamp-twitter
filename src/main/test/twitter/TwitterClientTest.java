@@ -1,18 +1,16 @@
 package twitter;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- * Created by Stig-Rune Skansgård on 09.01.2015.
- */
-public class SerializerTest {
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+
+public class TwitterClientTest {
 
     static String tweet = "{\n" +
             "\t\"created_at\":\"Fri Jan 09 10:32:07 +0000 2015\",\n" +
@@ -22,9 +20,9 @@ public class SerializerTest {
             "\t\"source\":\"\\u003ca href=\\\"http:\\/\\/twitter.com\\/download\\/android\\\" rel=\\\"nofollow\\\"\\u003eTwitter for Android\\u003c\\/a\\u003e\",\n" +
             "\t\"truncated\":false,\n" +
             "\t\"in_reply_to_status_id\":1234,\n" +
-            "\t\"in_reply_to_status_id_str\":\"statusId\",\n" +
-            "\t\"in_reply_to_user_id\":1234,\n" +
-            "\t\"in_reply_to_user_id_str\":\"userId\",\n" +
+            "\t\"in_reply_to_status_id_str\":\"1234\",\n" +
+            "\t\"in_reply_to_user_id\":4567,\n" +
+            "\t\"in_reply_to_user_id_str\":\"4567\",\n" +
             "\t\"in_reply_to_screen_name\":\"olaNordmann\",\n" +
             "\t\"user\":\n" +
             "\t{\n" +
@@ -57,34 +55,23 @@ public class SerializerTest {
             "\t\t\"possibly_sensitive\":false,\n" +
             "\t\t\"filter_level\":\"medium\",\n" +
             "\t\t\"lang\":\"fr\",\n" +
-            "\t\t\"timestamp_ms\":\"1420799527622\"}\n";
+            "\t\t\"timestamp_ms\":\"1420799527622\"}\n" +
+            "\t\"retweeted_status\":\n" +
+            "\t{\n" +
+            "\t\t\"id\":551213330895892481\"\n}";
 
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void testSerializer() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
         mapper.setDateFormat(new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH));
 
         Tweet deSerializedTweet = mapper.readValue(tweet, Tweet.class);
 
-
-        if (StringUtils.isBlank(deSerializedTweet.getTweetId()))
-            System.out.println("TweetId should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToScreenName()))
-            System.out.println("InReplyToScreenName should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToStatusId()))
-            System.out.println("InReplyToStatusId should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToStatusIdStr()))
-            System.out.println("InReplyToStatusIdStr should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToUserId()))
-            System.out.println("InReplyToUserId should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToUserIdStr()))
-            System.out.println("InReplyToUserIdStr should not be null or empty");
-
-        System.out.println("Tests complete");
+        assertEquals("553499452359852032", deSerializedTweet.getTweetId());
+        assertNotNull("olaNordmann", deSerializedTweet.getInReplyToScreenName());
+        assertNotNull("1234", deSerializedTweet.getInReplyToStatusId());
+        assertNotNull("4567", deSerializedTweet.getInReplyToUserId());
+        assertNotNull("551213330895892481", deSerializedTweet.getRetweetedStatus().getTweetId());
     }
 }

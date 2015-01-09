@@ -9,7 +9,6 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Tweet {
 
-
     @JsonProperty(value = "id")
     private String tweetId;
 
@@ -18,9 +17,7 @@ public class Tweet {
 
     private String inReplyToScreenName;
     private String inReplyToStatusId;
-    private String inReplyToStatusIdStr;
     private String inReplyToUserId;
-    private String inReplyToUserIdStr;
     private boolean retweeted;
     private int retweetCount;
     
@@ -55,30 +52,12 @@ public class Tweet {
         return this;
     }
 
-    public String getInReplyToStatusIdStr() {
-        return inReplyToStatusIdStr;
-    }
-
-    public Tweet setInReplyToStatusIdStr(String inReplyToStatusIdStr) {
-        this.inReplyToStatusIdStr = inReplyToStatusIdStr;
-        return this;
-    }
-
     public String getInReplyToUserId() {
         return inReplyToUserId;
     }
 
     public Tweet setInReplyToUserId(String inReplyToUserId) {
         this.inReplyToUserId = inReplyToUserId;
-        return this;
-    }
-
-    public String getInReplyToUserIdStr() {
-        return inReplyToUserIdStr;
-    }
-
-    public Tweet setInReplyToUserIdStr(String inReplyToUserIdStr) {
-        this.inReplyToUserIdStr = inReplyToUserIdStr;
         return this;
     }
 
