@@ -32,7 +32,7 @@ var Tweet = React.createClass({
 var TweetList = React.createClass({
     render: function() {
     	console.log(this.props.data);
-    	var conversationNodes = conversations.map(function (tweets) {
+    	var conversationNodes = this.props.data.map(function (tweets) {
     		var tweetNodes = tweets.tweet.map(function (tweet) {
 				return <Tweet author={tweet.author} className="conversation">
 					{tweet.message}
@@ -49,29 +49,63 @@ var TweetList = React.createClass({
 });
 
 var Conversation = React.createClass({
-	loadTweetsFromServer: function() {
-		return conversations;
-		/*$.ajax({
-			url: this.props.url,
-			dataType: 'json',
-			success: function(data) {
-				this.setState({data: data});
-			}.bind(this),
-			error: function(xhr, status, err) {
-				console.error(this.props.url, status, err.toString());
-			}.bind(this)
-			});*/
+	addTweet: function(tweet) {
+		var tweets = this.state.data;
+		var newTweets = tweets.concat([tweet]);
+
+		if(newTweets.length > 15) {
+			newTweets.splice(0, 1);
+		}
+		this.setState({data: newTweets});
 	},
 	getInitialState: function() {
 		return {data: []};
 	},
-	componentDidMount: function() {
-		this.loadTweetsFromServer();
+	componentWillMount: function() {
+		//var socket = io.connect();
+		//var self = this;
+
+		//socket.on('info', function (data) {
+		//	self.addTweet(data.tweet);
+		//});
+		if (!window.WebSocket) {
+			alert("FATAL: WebSocket not natively supported. This demo will not work!");
+		}
+		var ws;
+
+		ws = new WebSocket("ws://localhost:9001");
+		ws.onopen = function() {
+			console.log("[WebSocket#onopen]\n");
+		}
+		ws.onmessage = function(e) {
+			console.log("[WebSocket#onmessage] Message: '" + e.data + "'\n");
+		}
+		ws.onclose = function() {
+			console.log("[WebSocket#onclose]\n");
+			ws = null;
+		}
+
+		/*$("sendForm").observe("submit", function(e) {
+			e.stop();
+			if (ws) {
+				var textField = $("textField");
+				ws.send(textField.value);
+				console.log("[WebSocket#send]      Send:    '" + textField.value + "'\n");
+				textField.value = "";
+				textField.focus();
+			}
+		});
+		$("disconnect").observe("click", function(e) {
+		e.stop();
+		if (ws) {
+			ws.close();
+			ws = null;
+		}*/
 	},
 	render: function() {
 		return <div className="conversation">
 			<h3>Dette er en samtale</h3>
-			<TweetList />
+			<TweetList data={this.state.data} />
 		</div>;
 	}
 });
