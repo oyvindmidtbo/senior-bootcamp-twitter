@@ -22,48 +22,23 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class TwitterClient {
 
-
-
     public static void main(String[] args) throws UnknownHostException {
-        TwitterAuthentication twitterAuthentication = new TwitterAuthentication();
-
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
-        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
 
-        /** Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth) */
-        Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
-        StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-
-        // Optional: set up some followings and track terms
-        List<Long> followings = Lists.newArrayList(1234L, 566788L);
-        List<String> terms = Lists.newArrayList("twitter", "api");
-        hosebirdEndpoint.followings(followings);
-        hosebirdEndpoint.trackTerms(terms);
-
-        // These secrets should be read from a config file
-        Authentication hosebirdAuth = new OAuth1(twitterAuthentication.getConsumerKey(), twitterAuthentication.getConsumerSecret(), 
-                twitterAuthentication.getAccessToken(), twitterAuthentication.getAccessTokenSecret());
-        
-        ClientBuilder builder = new ClientBuilder()
-                .name("Hosebird-Client-01")                              // optional: mainly for the logs
-                .hosts(hosebirdHosts)
-                .authentication(hosebirdAuth)
-                .endpoint(hosebirdEndpoint)
-                .processor(new StringDelimitedProcessor(msgQueue))
-                .eventMessageQueue(eventQueue);                          // optional: use this if you want to process client events
-
+        ClientBuilder builder = createClientBuilder(msgQueue);
         Client hosebirdClient = builder.build();
-        
-        // Attempts to establish a connection.
+
         hosebirdClient.connect();
 
         WebSocketImpl.DEBUG = true;
         int port = 8887; // 843 flash policy port
+
         try {
-            port = Integer.parseInt( args[ 0 ] );
-        } catch ( Exception ignored) {
+            port = Integer.parseInt(args[0]);
+        } catch (Exception ignored) {
         }
-        TwitterHub hub = new TwitterHub( port );
+
+        TwitterHub hub = new TwitterHub(port);
         hub.start();
         System.out.println("TwitterHub started on port: " + hub.getPort());
 
@@ -75,7 +50,7 @@ public class TwitterClient {
                 e.printStackTrace();
             }
             Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
-            
+
             if (tweet != null) {
                 if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
                     System.out.println((tweet.getText()));
@@ -83,5 +58,29 @@ public class TwitterClient {
                 }
             }
         }
+    }
+
+    private static ClientBuilder createClientBuilder(BlockingQueue<String> msgQueue) {
+        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
+
+        Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
+        StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
+
+        List<Long> followings = Lists.newArrayList(1234L, 566788L);
+        List<String> terms = Lists.newArrayList("twitter", "api");
+        hosebirdEndpoint.followings(followings);
+        hosebirdEndpoint.trackTerms(terms);
+
+        Authentication hosebirdAuth = new OAuth1(TwitterAuthentication.getConsumerKey(), TwitterAuthentication.getConsumerSecret(),
+                TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
+
+        return new ClientBuilder()
+                .name("Hosebird-Client-01")                              // optional: mainly for the logs
+                .hosts(hosebirdHosts)
+                .authentication(hosebirdAuth)
+                .endpoint(hosebirdEndpoint)
+                .processor(new StringDelimitedProcessor(msgQueue))
+                .eventMessageQueue(eventQueue);
+
     }
 }
