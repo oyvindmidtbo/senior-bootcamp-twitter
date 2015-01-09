@@ -3,12 +3,14 @@ package twitter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class SerializerTest {
+import static junit.framework.TestCase.assertNotNull;
+
+public class TwitterClientTest {
 
     static String tweet = "{\n" +
             "\t\"created_at\":\"Fri Jan 09 10:32:07 +0000 2015\",\n" +
@@ -58,34 +60,20 @@ public class SerializerTest {
             "\t{\n" +
             "\t\t\"id\":551213330895892481\"\n}";
 
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void testSerializer() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
         mapper.setDateFormat(new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH));
 
         Tweet deSerializedTweet = mapper.readValue(tweet, Tweet.class);
 
-        if (StringUtils.isBlank(deSerializedTweet.getTweetId()))
-            System.out.println("TweetId should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToScreenName()))
-            System.out.println("InReplyToScreenName should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToStatusId()))
-            System.out.println("InReplyToStatusId should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToStatusIdStr()))
-            System.out.println("InReplyToStatusIdStr should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToUserId()))
-            System.out.println("InReplyToUserId should not be null or empty");
-
-        if (StringUtils.isBlank(deSerializedTweet.getInReplyToUserIdStr()))
-            System.out.println("InReplyToUserIdStr should not be null or empty");
-        
-        if (StringUtils.isBlank(deSerializedTweet.getRetweetedStatus().getTweetId()))
-            System.out.println("RetweetedStatus should not be null or empty");
-
-        System.out.println("Tests complete");
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getTweetId()));
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToScreenName()));
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToStatusId()));
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToStatusIdStr()));
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToUserId()));
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getInReplyToUserIdStr()));
+        assertNotNull(StringUtils.isBlank(deSerializedTweet.getRetweetedStatus().getTweetId()));
     }
 }

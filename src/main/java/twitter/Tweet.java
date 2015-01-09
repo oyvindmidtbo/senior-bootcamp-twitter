@@ -9,7 +9,6 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Tweet {
 
-
     @JsonProperty(value = "id")
     private String tweetId;
 

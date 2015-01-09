@@ -1,6 +1,5 @@
 package twitter;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.collect.Lists;
@@ -20,7 +19,6 @@ import org.neo4j.graphdb.Transaction;
 import server.TwitterHub;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
