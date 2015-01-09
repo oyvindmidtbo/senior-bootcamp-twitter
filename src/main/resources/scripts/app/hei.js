@@ -5,10 +5,9 @@ var Tweet = React.createClass({
         return <div className="tweet" key={this.props.keyToAnimate}>
 				<div className="panel panel-default">
 					<div className="panel-body">
-						Fra <strong>{this.props.author}</strong><br />
-						Melding: {this.props.children}
+						{this.props.children}
 					</div>
-					<div className="panel-footer">Replies: 5</div>
+					<div className="panel-footer">Replies: {this.props.conversationSize}</div>
 				</div>
 			</div>;
     }
@@ -17,23 +16,12 @@ var Tweet = React.createClass({
 var TweetList = React.createClass({
     render: function() {
     	var tweetNodes = this.props.data.map(function (tweet) {
-			return <Tweet keyToAnimate="{tweet.id}" author={tweet.author} className="conversation">
-						{tweet}
+    		console.log(tweet);
+    		tweet = $.parseJSON(tweet);
+			return <Tweet keyToAnimate="{tweet.id}" author={tweet.author} conversationSize={tweet.size} className="conversation">
+						{tweet.text}
 					</Tweet>;
 		});
-
-		/*
-			var conversationNodes = this.props.data.map(function (tweets) {
-    		var tweetNodes = tweets.tweet.map(function (tweet, index) {
-    			console.log(index);
-				return <Tweet author={tweet.author} position="{index}" className="conversation">
-					{tweet.message}
-				</Tweet>;
-			});
-
-			return tweetNodes;
-		});
-		*/
 
 		return <ReactCSSTransitionGroup transitionName="example">
 			{ tweetNodes }
@@ -49,7 +37,7 @@ var Conversation = React.createClass({
 		var tweets = this.state.data;
 		var newTweets = tweets.concat([tweet]);
 
-		if(newTweets.length > 20) {
+		if(newTweets.length > 2000) {
 			newTweets.splice(0, 1);
 		}
 		this.setState({data: newTweets});
@@ -76,7 +64,7 @@ var Conversation = React.createClass({
 				console.log("WebSocket connection opened");
 			}
 			ws.onmessage = function(e) {
-				console.log("Message: '" + e.data + "'\n");
+				//console.log("Message: '" + e.data + "'\n");
 				that.addTweet(e.data);
 			}
 		};
