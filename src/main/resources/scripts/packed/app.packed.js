@@ -17,9 +17,9 @@ var Tweet = React.createClass({
 var TweetList = React.createClass({
     render: function() {
     	var tweetNodes = this.props.data.map(function (tweet) {
-				return <Tweet keyToAnimate="{tweet}" author={tweet.author} className="conversation">
-					{tweet}
-				</Tweet>;
+			return <Tweet keyToAnimate="{tweet.id}" author={tweet.author} className="conversation">
+						{tweet}
+					</Tweet>;
 		});
 
 		/*
