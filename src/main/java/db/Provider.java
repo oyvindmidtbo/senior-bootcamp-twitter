@@ -205,8 +205,14 @@ public class Provider {
 
         String id = tweet.getTweetId() != null ? tweet.getTweetId() : tweet.getRetweetedStatus().getTweetId();
         Node topNode = getNodeForConversationStart(id);
-        int size = getConversationSizeForId(id);
-        System.out.println(id);
+        int size = 0;
+        if(tweet.getRetweetedStatus() != null){
+            //cheating
+             size = tweet.getRetweetedStatus().getRetweetCount();
+        }
+        else {
+             size = getConversationSizeForId(id);
+        }
         String conversationId = String.valueOf(topNode.getProperty("tweetId"));
         String userId = (String)topNode.getProperty("userId");
         String text = (String)topNode.getProperty("text");
