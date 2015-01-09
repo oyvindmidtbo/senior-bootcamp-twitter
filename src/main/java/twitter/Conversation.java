@@ -25,7 +25,7 @@ public class Conversation {
     }
 
     public String toJson(){
-        return "{\"id\":" + tweetId + ",\"size\":" + conversationSize + ",\"text\":" + text + "}";
+        return "{\"id\":" + tweetId + ",\"size\":" + conversationSize + ",\"text\":" + "\"" + text + "\"}";
     }
 
     public int getConversationSize() {
