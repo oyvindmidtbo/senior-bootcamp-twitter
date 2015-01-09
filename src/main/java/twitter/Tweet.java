@@ -1,14 +1,9 @@
 package twitter;
 
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -28,6 +23,8 @@ public class Tweet {
     private String inReplyToUserIdStr;
     private boolean retweeted;
     private int retweetCount;
+    
+    private Tweet retweetedStatus;
 
     private User user;
 
@@ -133,6 +130,15 @@ public class Tweet {
 
     public Tweet setRetweetCount(int retweetCount) {
         this.retweetCount = retweetCount;
+        return this;
+    }
+
+    public Tweet getRetweetedStatus() {
+        return retweetedStatus;
+    }
+
+    public Tweet setRetweetedStatus(Tweet retweetedStatus) {
+        this.retweetedStatus = retweetedStatus;
         return this;
     }
 }
