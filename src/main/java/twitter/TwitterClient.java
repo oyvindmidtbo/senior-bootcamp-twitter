@@ -21,24 +21,24 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TwitterClient {
-    
+
     public static void main(String[] args) throws UnknownHostException {
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
-        
+
         ClientBuilder builder = createClientBuilder(msgQueue);
         Client hosebirdClient = builder.build();
-        
+
         hosebirdClient.connect();
 
         WebSocketImpl.DEBUG = true;
         int port = 8887; // 843 flash policy port
-        
+
         try {
-            port = Integer.parseInt( args[ 0 ] );
+            port = Integer.parseInt(args[0]);
         } catch (Exception ignored) {
         }
-        
-        TwitterHub hub = new TwitterHub( port );
+
+        TwitterHub hub = new TwitterHub(port);
         hub.start();
         System.out.println("TwitterHub started on port: " + hub.getPort());
 
@@ -50,7 +50,7 @@ public class TwitterClient {
                 e.printStackTrace();
             }
             Tweet tweet = JsonParser.createTweetObjectFromJson(msg);
-            
+
             if (tweet != null) {
                 if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
                     System.out.println((tweet.getText()));
@@ -59,10 +59,10 @@ public class TwitterClient {
             }
         }
     }
-    
+
     private static ClientBuilder createClientBuilder(BlockingQueue<String> msgQueue) {
         BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
-        
+
         Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
 
@@ -70,10 +70,10 @@ public class TwitterClient {
         List<String> terms = Lists.newArrayList("twitter", "api");
         hosebirdEndpoint.followings(followings);
         hosebirdEndpoint.trackTerms(terms);
-        
+
         Authentication hosebirdAuth = new OAuth1(TwitterAuthentication.getConsumerKey(), TwitterAuthentication.getConsumerSecret(),
                 TwitterAuthentication.getAccessToken(), TwitterAuthentication.getAccessTokenSecret());
-        
+
         return new ClientBuilder()
                 .name("Hosebird-Client-01")                              // optional: mainly for the logs
                 .hosts(hosebirdHosts)
