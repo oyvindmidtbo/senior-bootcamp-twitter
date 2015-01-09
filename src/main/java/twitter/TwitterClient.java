@@ -62,19 +62,20 @@ public class TwitterClient {
 
             Tweet tweet = mapper.readValue(msg, Tweet.class);
 
-            if (tweet != null) {
-                try (Transaction tx = db.getDatabase().beginTx();) {
+            if (tweet != null && tweet.getTweetId() != null) {
+                try ( Transaction tx = db.getDatabase().beginTx(); ) {
                     db.createTweet(tweet);
+
                     tx.success();
-                } catch (Exception e) {
+                } catch(Exception e){
                     e.printStackTrace();
                 }
-                if (tweet.getInReplyToStatusId() != null && !tweet.getInReplyToStatusId().equals("null")) {
-                    System.out.println((tweet.getText()));
-                    try (Transaction tx = db.getDatabase().beginTx();) {
+                if (tweet.getRetweetedStatus() != null && !tweet.getRetweetedStatus().getTweetId().equals("null")) {
+                    try( Transaction tx = db.getDatabase().beginTx(); ){
                         Conversation conversation = db.getConversationForTweet(tweet);
-
-                        System.out.println(conversation.toJson());
+                        if(conversation.getConversationSize() > 0){
+                            System.out.println(conversation.toJson());
+                        }
                         hub.sendToAll(conversation);
                         tx.success();
                     }
