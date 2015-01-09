@@ -33,8 +33,9 @@ var TweetList = React.createClass({
     render: function() {
     	console.log(this.props.data);
     	var conversationNodes = this.props.data.map(function (tweets) {
-    		var tweetNodes = tweets.tweet.map(function (tweet) {
-				return <Tweet author={tweet.author} className="conversation">
+    		var tweetNodes = tweets.tweet.map(function (tweet, index) {
+    			console.log(index);
+				return <Tweet author={tweet.author} position="{index}" className="conversation">
 					{tweet.message}
 				</Tweet>;
 			});
@@ -62,46 +63,52 @@ var Conversation = React.createClass({
 		return {data: []};
 	},
 	componentWillMount: function() {
+
 		//var socket = io.connect();
 		//var self = this;
 
 		//socket.on('info', function (data) {
 		//	self.addTweet(data.tweet);
 		//});
-		if (!window.WebSocket) {
-			alert("FATAL: WebSocket not natively supported. This demo will not work!");
-		}
+
 		var ws;
 
-		ws = new WebSocket("ws://localhost:9001");
-		ws.onopen = function() {
-			console.log("[WebSocket#onopen]\n");
-		}
-		ws.onmessage = function(e) {
-			console.log("[WebSocket#onmessage] Message: '" + e.data + "'\n");
-		}
-		ws.onclose = function() {
-			console.log("[WebSocket#onclose]\n");
-			ws = null;
-		}
-
-		/*$("sendForm").observe("submit", function(e) {
-			e.stop();
-			if (ws) {
-				var textField = $("textField");
-				ws.send(textField.value);
-				console.log("[WebSocket#send]      Send:    '" + textField.value + "'\n");
-				textField.value = "";
-				textField.focus();
-			}
-		});
-		$("disconnect").observe("click", function(e) {
-		e.stop();
-		if (ws) {
+		var stopWebsocket = function() {
 			ws.close();
 			ws = null;
-		}*/
+			console.log("[WebSocket#onclose]\n");
+		};
+
+		var startWebsocket = function() {
+			if (!window.WebSocket) {
+				alert("FATAL: WebSocket not natively supported. This demo will not work!");
+			}
+
+			ws = new WebSocket("ws://localhost:8887");
+			ws.onopen = function() {
+				console.log("[WebSocket#onopen]\n");
+			}
+			ws.onmessage = function(e) {
+				console.log("[WebSocket#onmessage] Message: '" + e.data + "'\n");
+				this.state.data = e.data;
+			}
+		};
+		
+		$(".stop").click(function(e) {
+			stopWebsocket();
+			$(".start, .stop").toggleClass("hidden");
+		});
+
+		$(".start").click(function(e) {
+			startWebsocket();
+
+			$(".start, .stop").toggleClass("hidden");
+		});
+
+
+		startWebsocket();
 	},
+
 	render: function() {
 		return <div className="conversation">
 			<h3>Dette er en samtale</h3>
