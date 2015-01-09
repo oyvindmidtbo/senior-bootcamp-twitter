@@ -47,8 +47,50 @@ public class JsonParser {
         return tweet;
     }
     
-    private static LocalDateTime formatCreatedAt(String createdAt) {
+    protected static LocalDateTime formatCreatedAt(String createdAt) {
         // TODO: Fikse formatering fra "Thu Jan 08 13:46:39 +0000 2015" til en LocalDateTime
-        return null;
+        // TODO: Dette er nemlig KRISEKODE!!!
+        
+        int year = Integer.parseInt(createdAt.substring(26, 30));
+        int month = getMonth(createdAt.substring(4, 7));
+        int day = Integer.parseInt(createdAt.substring(8, 10));
+        
+        int hour = Integer.parseInt(createdAt.substring(11, 13));
+        int minute = Integer.parseInt(createdAt.substring(14, 16));
+        int second = Integer.parseInt(createdAt.substring(17, 19));
+        
+        return LocalDateTime.of(year, month, day, hour, minute, second);
+    }
+    
+    private static int getMonth(String month) {
+        switch (month) {
+            case "Jan":
+                return 1;
+            case "Feb":
+                return 2;
+            case "Mar":
+                return 3;
+            case "Apr":
+                return 4;
+            case "May":
+                return 5;
+            case "Jun":
+                return 6;
+            case "Jul":
+                return 7;
+            case "Aug":
+                return 8;
+            case "Sep":
+                return 9;
+            case "Oct":
+                return 10;
+            case "Nov":
+                return 11;
+            case "Des":
+                return 12;
+            default:
+                return 1;
+        }
+        
     }
 }
