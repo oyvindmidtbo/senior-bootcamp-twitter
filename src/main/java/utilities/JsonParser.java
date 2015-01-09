@@ -18,6 +18,8 @@ public class JsonParser {
     private static final String IN_REPLY_TO_STATUS_ID_STR = "in_reply_to_status_id_str";
     private static final String IN_REPLY_TO_USER_ID = "in_reply_to_user_id";
     private static final String IN_REPLY_TO_USER_ID_STR = "in_reply_to_user_id_str";
+    private static final String RETWEETED = "retweeted";
+    private static final String RETWEET_COUNT = "retweet_count";
 
     public static Tweet createTweetObjectFromJson(String json) {
         Tweet tweet;
@@ -34,7 +36,9 @@ public class JsonParser {
                     .setInReplyToStatusId(jsonObject.getString(IN_REPLY_TO_STATUS_ID))
                     .setInReplyToStatusIdStr(jsonObject.getString(IN_REPLY_TO_STATUS_ID_STR))
                     .setInReplyToUserId(jsonObject.getString(IN_REPLY_TO_USER_ID))
-                    .setInReplyToUserIdStr(jsonObject.getString(IN_REPLY_TO_USER_ID_STR));
+                    .setInReplyToUserIdStr(jsonObject.getString(IN_REPLY_TO_USER_ID_STR))
+                    .setRetweeted(Boolean.valueOf(jsonObject.getString(RETWEETED)))
+                    .setRetweetCount(Integer.valueOf(jsonObject.getString(RETWEET_COUNT)));
             
         } catch (JSONException e) {
             return null;

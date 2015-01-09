@@ -13,6 +13,8 @@ public class Tweet {
     private String inReplyToStatusIdStr;
     private String inReplyToUserId;
     private String inReplyToUserIdStr;
+    private boolean retweeted;
+    private int retweetCount;
 
     public String getText() {
         return text;
@@ -92,6 +94,24 @@ public class Tweet {
 
     public Tweet setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+
+    public boolean isRetweeted() {
+        return retweeted;
+    }
+
+    public Tweet setRetweeted(boolean retweeted) {
+        this.retweeted = retweeted;
+        return this;
+    }
+
+    public int getRetweetCount() {
+        return retweetCount;
+    }
+
+    public Tweet setRetweetCount(int retweetCount) {
+        this.retweetCount = retweetCount;
         return this;
     }
 }
