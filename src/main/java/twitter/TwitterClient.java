@@ -90,7 +90,7 @@ public class TwitterClient {
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
 
         List<Long> followings = Lists.newArrayList(1234L, 566788L);
-        List<String> terms = Lists.newArrayList("twitter", "api");
+        List<String> terms = Lists.newArrayList("jesuischarlie");
         hosebirdEndpoint.followings(followings);
         hosebirdEndpoint.trackTerms(terms);
 
